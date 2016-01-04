@@ -1,0 +1,2 @@
+# JournalBuddy
+First android application 
