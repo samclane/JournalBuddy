@@ -84,6 +84,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onStart() {
         super.onStart();
+        //kind of a hack, I should probably fix this.
         refreshEntryList();
     }
 
@@ -126,6 +127,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Log.d("main_menu", position + ": " + mainEntryList.get(position));
+        String fileName = mainEntryList.get(position);
+        Intent readIntent = new Intent(getBaseContext(), NewEntry.class);
+        readIntent.putExtra("ENTRY", readFromFile(fileName)); //send body text to new window
+        readIntent.putExtra("TITLE", fileName);
+        startActivity(readIntent);
     }
 
     @Override
@@ -160,12 +166,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    private String readFromFile() {
+    private String readFromFile(String fileName) {
 
         String ret = "";
 
         try {
-            InputStream inputStream = openFileInput("config.txt");
+            InputStream inputStream = openFileInput(fileName);
 
             if (inputStream != null) {
                 InputStreamReader inputStreamReader = new InputStreamReader(inputStream);

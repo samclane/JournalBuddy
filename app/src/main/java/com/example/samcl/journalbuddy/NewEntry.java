@@ -1,6 +1,7 @@
 package com.example.samcl.journalbuddy;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -19,11 +20,25 @@ import java.io.OutputStreamWriter;
  */
 public class NewEntry extends AppCompatActivity {
 
+    EditText mTitleText;
+    EditText mBodyText;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.new_entry);
+        mTitleText = (EditText) findViewById(R.id.editText2); //title
+        mBodyText = (EditText) findViewById(R.id.editText3); //entty body text
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Intent intent = getIntent();
+        // Get the extras (if there are any)
+        Bundle extras = intent.getExtras();
+        if (extras != null) {
+            if (extras.containsKey("ENTRY")) {
+                mTitleText.setText(extras.getString("TITLE"));
+                mBodyText.setText(extras.getString("ENTRY"));
+            }
+        }
 
     }
 
@@ -34,8 +49,6 @@ public class NewEntry extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        EditText mTitleText = (EditText) findViewById(R.id.editText2); //title
-        EditText mBodyText = (EditText) findViewById(R.id.editText3); //entty body text
         switch (item.getItemId()) {
             case R.id.action_save:
                 //get title of entery for file name
