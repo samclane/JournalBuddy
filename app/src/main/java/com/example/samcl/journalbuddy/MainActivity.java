@@ -92,7 +92,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //Iterate through internal storage, getting all entries
         for (final File fileEntry : getBaseContext().getFilesDir().listFiles()) {
             //add file title to list
-            mainEntryList.add(fileEntry.getName());
+            if (!(mainEntryList.contains(fileEntry.getName()))) { //if filename isn't already in list
+                mainEntryList.add(fileEntry.getName()); //add filename
+            }
         }
         if (mainEntryList.isEmpty()) {
             //tell user there are no journal entries
