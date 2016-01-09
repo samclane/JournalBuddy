@@ -16,7 +16,19 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+
+/**
+ * Created by samcl
+ * Short Description: Main menu for JournalBuddy, displaying all saved entries and allowing the
+ * user to create new ones.
+ */
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener,
         AdapterView.OnItemClickListener {
@@ -48,14 +60,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         mainListView = (ListView) findViewById(R.id.listView);
         mainListView.setOnItemClickListener(this);
-        if (mainEntryList.isEmpty()) {
-            //tell user there are no journal entries
-            mainEntryList.add("No entries found");
-
-        }
-        else {
-            //get entries
-        }
+        refreshEntryList();
         mArrayAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1,
                 mainEntryList);
@@ -74,6 +79,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         mActivityTitle = getTitle().toString();
         setupDrawer();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        refreshEntryList();
+    }
+
+    public void refreshEntryList() {
+        //Iterate through internal storage, getting all entries
+        for (final File fileEntry : getBaseContext().getFilesDir().listFiles()) {
+            //add file title to list
+            mainEntryList.add(fileEntry.getName());
+        }
+        if (mainEntryList.isEmpty()) {
+            //tell user there are no journal entries
+            mainEntryList.add("No entries found");
+
+        }
     }
 
     @Override
@@ -134,5 +158,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mDrawerToggle.setDrawerIndicatorEnabled(true);
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
+    }
+
+    private String readFromFile() {
+
+        String ret = "";
+
+        try {
+            InputStream inputStream = openFileInput("config.txt");
+
+            if (inputStream != null) {
+                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                String receiveString;
+                StringBuilder stringBuilder = new StringBuilder();
+
+                while ((receiveString = bufferedReader.readLine()) != null) {
+                    stringBuilder.append(receiveString);
+                }
+
+                inputStream.close();
+                ret = stringBuilder.toString();
+            }
+        } catch (FileNotFoundException e) {
+            Log.e("login activity", "File not found: " + e.toString());
+        } catch (IOException e) {
+            Log.e("login activity", "Can not read file: " + e.toString());
+        }
+
+        return ret;
     }
 }
