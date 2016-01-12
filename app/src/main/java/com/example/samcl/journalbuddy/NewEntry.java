@@ -1,6 +1,8 @@
 package com.example.samcl.journalbuddy;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -8,6 +10,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -51,23 +54,55 @@ public class NewEntry extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_save:
-                //get title of entery for file name
-                String fileName = mTitleText.getText().toString();
-                //get files directory
-                String fileString = mBodyText.getText().toString();
-                FileOutputStream outputStream;
-                try {
-                    //entries can only be accessed by the calling application
-                    outputStream = openFileOutput(fileName, Context.MODE_PRIVATE);
-                    outputStream.write(fileString.getBytes());
-                    outputStream.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                onActionSave();
+            case R.id.action_delete:
+                onActionDelete();
             default:
                 return super.onOptionsItemSelected(item);
         }
 
+    }
+
+    public void onActionSave() {
+        //get title of entery for file name
+        String fileName = mTitleText.getText().toString();
+        //get files directory
+        String fileString = mBodyText.getText().toString();
+        FileOutputStream outputStream;
+        try {
+            //entries can only be accessed by the calling application
+            outputStream = openFileOutput(fileName, Context.MODE_PRIVATE);
+            outputStream.write(fileString.getBytes());
+            outputStream.close();
+            Toast.makeText(this, fileName + " has been saved", Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "ERROR Saving " + fileName, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void onActionDelete() {
+        final String fileName = mTitleText.getText().toString();
+        //TODO:IMPORTANT:Add confirmation popup.
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.dialog_message).setTitle(R.string.dialog_title);
+        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                deleteFile(fileName);
+                dialog.dismiss();
+                finish();
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        MainActivity.removeEntry(fileName);
+        dialog.show();
     }
 
     private void writeToFile(String data, String fileName) {

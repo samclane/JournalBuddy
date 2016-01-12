@@ -11,4 +11,8 @@
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
     <string name="action_save">save</string>
+    <string name="dialog_message">Are you sure you want to delete?</string>
+    <string name="dialog_title">Delete?</string>
+    <string name="ok">Ok</string>
+    <string name="cancel">Cancel</string>
 </resources>

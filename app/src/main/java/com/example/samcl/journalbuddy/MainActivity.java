@@ -34,8 +34,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         AdapterView.OnItemClickListener {
 
     ListView mainListView; //all entries so far
-    ArrayList<String> mainEntryList = new ArrayList<>(); //list of all entries
-    ArrayAdapter<String> mArrayAdapter;
+    static ArrayList<String> mainEntryList = new ArrayList<>(); //list of all entries
+    static ArrayAdapter<String> mArrayAdapter;
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout mDrawerLayout;
@@ -60,7 +60,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         mainListView = (ListView) findViewById(R.id.listView);
         mainListView.setOnItemClickListener(this);
-        refreshEntryList();
         mArrayAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1,
                 mainEntryList);
@@ -85,11 +84,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onStart() {
         super.onStart();
         //kind of a hack, I should probably fix this.
-        refreshEntryList();
+        refreshEntries();
+
     }
 
-    public void refreshEntryList() {
-        //Iterate through internal storage, getting all entries
+    public void refreshEntries() {
         for (final File fileEntry : getBaseContext().getFilesDir().listFiles()) {
             //add file title to list
             if (!(mainEntryList.contains(fileEntry.getName()))) { //if filename isn't already in list
@@ -101,6 +100,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             mainEntryList.add("No entries found");
 
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        refreshEntries();
     }
 
     @Override
@@ -195,5 +200,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         return ret;
+    }
+
+    public static void removeEntry(String fileName) {
+        mainEntryList.remove(fileName);
+        mArrayAdapter.notifyDataSetChanged();
     }
 }
